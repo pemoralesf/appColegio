@@ -1,0 +1,2 @@
+CREATE DATABASE  Colegio
+GO
