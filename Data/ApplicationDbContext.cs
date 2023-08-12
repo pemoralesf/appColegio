@@ -18,5 +18,9 @@ namespace Data
 
         public DbSet<Materia> Materias { get; set; }
         public DbSet<Alumno> Alumnos { get; set; }
+        public DbSet<Docente> Docentes { get; set; }
+        public DbSet<AlumnoMateria> AlumnoMaterias { get; set; }
+        public DbSet<Nota> Notas { get; set; }
     }
 }
+
