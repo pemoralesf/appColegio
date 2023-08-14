@@ -3,6 +3,7 @@ using Models.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,15 @@ namespace Data
         public DbSet<Docente> Docentes { get; set; }
         public DbSet<AlumnoMateria> AlumnoMaterias { get; set; }
         public DbSet<Nota> Notas { get; set; }
+        public DbSet<NotasRango> NotasRango { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.Entity<NotasRango>(a => a.HasNoKey());
+        }
+
     }
 }
 

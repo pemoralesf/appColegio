@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Models.Dtos;
 using Models.Entidades;
 using System.Net.WebSockets;
@@ -102,6 +103,119 @@ namespace API.Controllers
                .ToListAsync();
             return Ok(lista);
         }
+
+        //  Tercera  Semana
+        
+
+        [HttpGet("GetAlumnoUnionQuery")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetLibrosUnionQuery()
+        {
+            var lista1 = await (from p in _context.Alumnos.Include(p => p.Materia)
+                                where p.Nota > 4
+                               select p).ToListAsync();
+
+            var lista2 = await (from p in _context.Alumnos.Include(p => p.Materia)
+                                where p.FchNacimiento.Year >= 2011
+                               select p).ToListAsync();
+
+            var listaUnion = lista1.Union(lista2);
+            return Ok(listaUnion);
+        }
+
+
+
+        [HttpGet("GetAlumnoUnionMethod")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetAlumnoUnionMethod()
+        {
+            var lista1 = await _context.Alumnos.Include(p => p.Materia)
+                .Where(p => p.Nota > 4)
+                .ToListAsync();
+
+            var lista2 = await _context.Alumnos.Include(p => p.Materia)
+                .Where(p=> p.FchNacimiento.Year >= 2011)
+                .ToListAsync();
+
+            var listaUnion = lista1.Union(lista2);
+            return Ok(listaUnion);
+        }
+        
+        
+
+        [HttpGet("GetAlumnoUnionAllQuery")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetAlumnoUnionAllQuery()
+        {
+            var lista1 = await (from p in _context.Alumnos.Include(p => p.Materia)
+                                where p.Nota > 4
+                                select p).ToListAsync();
+
+            var lista2 = await (from p in _context.Alumnos.Include(p => p.Materia)
+                                where p.FchNacimiento.Year >= 2011
+                                select p).ToListAsync();
+
+            var listaUnion = lista1.Concat(lista2);
+            return Ok(listaUnion);
+        }
+
+
+
+        [HttpGet("GetAlumnoUnionAllMethod")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetAlumnoUnionAllMethod()
+        {
+            var lista1 = await _context.Alumnos.Include(p => p.Materia)
+                .Where(p => p.Nota > 4)
+                .ToListAsync();
+
+            var lista2 = await _context.Alumnos.Include(p => p.Materia)
+                .Where(p => p.FchNacimiento.Year >= 2011)
+                .ToListAsync();
+
+            var listaUnion = lista1.Concat(lista2);
+            return Ok(listaUnion);
+        }
+
+        [HttpGet("GetAlumnosGroupByMaxPorMateriaQuery")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetAlumnosGroupByMaxPorMateriaQuery()
+        {
+            var lista = await (from m1 in _context.Alumnos.Include(m1 => m1.Materia)
+                               orderby m1.Nombre
+                               group m1 by m1.Materia.Nombre into temp
+                               select new
+                               {
+                                   Categoria = temp.Key,
+                                   Nota = (from temp1 in temp select temp1.Nota).Max()
+                               }
+                                ).ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpGet("GetAlumnosGroupByMaxPorMateriaMethod")]
+        public async Task<ActionResult<IEnumerable<Alumno>>> GetAlumnosGroupByMaxPorMateriaMethod()
+        {
+            var lista = await _context.Alumnos.Include(m1 => m1.Materia)
+                                .GroupBy(m1 => m1.Materia.Nombre)
+                                .Select(temp => new
+                                {
+                                    Categoria = temp.Key,
+                                    Nota = temp.Select(temp1 => temp1.Nota).Max()
+                                })
+                                .ToListAsync();
+
+
+            return Ok(lista);
+        }
+
+        [HttpGet("GetNotasSP")]
+        public async Task<ActionResult<IEnumerable<NotasRango>>> GetNotasSP(decimal notaini, decimal notafin)
+        {
+            var lista = await _context.NotasRango
+                                      .FromSqlRaw("NotasRangoAlumnos {0}, {1}", notaini, notafin)
+                                      .ToListAsync();
+            return Ok(lista);
+            
+        }
+
+        //
 
     }
 }

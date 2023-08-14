@@ -200,3 +200,17 @@ ALTER TABLE Nota
 ADD CONSTRAINT FK_Nota_Materia_MateriaId FOREIGN KEY(MateriaId)
 REFERENCES Materia(MateriaId) ON DELETE CASCADE;
 
+--------
+
+
+USE Colegio
+GO
+CREATE PROCEDURE NotasRangoAlumnos
+	@notaini numeric,
+	@notafin numeric
+AS
+select a.nombre, a.direccion,a.FchNacimiento, b.nombre as materia, a.nota  
+from alumno a, materia b
+where a.MateriaId = b.MateriaId
+and a.nota  >= @notaini and  a.nota <= @notafin
+GO
