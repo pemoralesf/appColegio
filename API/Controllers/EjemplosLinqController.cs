@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using Models.Dtos;
 using Models.Entidades;
+using Models.Especificaciones;
 using System.Net.WebSockets;
 
 namespace API.Controllers
@@ -215,7 +216,30 @@ namespace API.Controllers
             
         }
 
-        //
+        // 20082023
+
+
+        [HttpGet("GetCASEResultadosSP_Semana4")]
+        public async Task<ActionResult<IEnumerable<ResultadosCalificaciones>>> GetCASEResultadosSP_Semana4(decimal notaini, decimal notafin)
+        {
+            var lista = await _context.ResultadosCalificaciones
+                                      .FromSqlRaw("ResultadosCalificaciones {0}, {1}", notaini, notafin)
+                                      .ToListAsync();
+            return Ok(lista);
+
+        }
+
+
+
+        [HttpPost("AddAlumnosNotaInsertSP_Semana4")]
+        public async Task<ActionResult> AddAlumnosNotaInsertSP_Semana4(ParametrosVariables t)
+        {
+            await _context.Database.ExecuteSqlAsync
+            ($"AddAlumnosNota @notaIni= {t.notaini}, @notaFin = {t.notafin}");
+            return Ok("Notas Agregadas correctamente");
+        }
+
+
 
     }
 }
